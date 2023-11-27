@@ -8,6 +8,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
 
+
 @app.post("/users/create")
 def user_create():
     data = request.get_json()
