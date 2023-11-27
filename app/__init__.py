@@ -9,3 +9,5 @@ EMAILS = []  # list for user's email
 from app import main_route
 from app import views
 from app import models
+from app import tests
+

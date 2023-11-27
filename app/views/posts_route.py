@@ -50,6 +50,30 @@ def get_post(post_id):
     )
     return response
 
+@app.delete("/posts/<post_id>")
+def delete_post(post_id):
+    if post_id not in POSTS.keys():
+        return Response(status=HTTPStatus.NOT_FOUND)
+    temp_post = POSTS[post_id]
+
+    t = len(temp_post.reactions)
+    user = USERS[temp_post.author_id]
+    user.total_reactions -= t
+
+    temp_post.reactions = []
+    temp_post.status = "deleted"
+    response_data = {
+        "id": temp_post.post_id,
+        "author_id": temp_post.author_id,
+        "text": temp_post.text,
+        "reactions": temp_post.reactions,
+        "status": temp_post.status,
+    }
+
+    response = Response(
+        json.dumps(response_data), HTTPStatus.OK, mimetype="application/json"
+    )
+    return response
 
 @app.post("/posts/<post_id>/reaction")
 def create_reaction(post_id):

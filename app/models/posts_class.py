@@ -4,6 +4,7 @@ class Post:
         self.author_id = author_id
         self.text = text
         self.reactions = reactions
+        self.status = "exists"
 
     def __lt__(self, other):
         return len(self.reactions) < len(other.reactions)
@@ -15,5 +16,6 @@ class Post:
                 "author_id": self.author_id,
                 "text": self.text,
                 "reactions": self.reactions,
+                "status": self.status,
             }
         )

@@ -5,8 +5,11 @@ from app import app, USERS
 def index():
     response = (
         "<h1>Hello! This is my first project on flask!</h1> "
-        "<br>"
-        "<h2> The current data about users: </h2>"
-        f"{'<br>'.join([user.repr() for user in USERS.values()])}<br>"
+
+        "<h2> The current data: </h2>"
+        f"USERS: <br>"
+        f"{'<br>'.join([user.repr() for user in USERS.values() if user.status == 'exists'])}<br>"
+        f"{[k for k in USERS.keys()]}"
+
     )
     return response
