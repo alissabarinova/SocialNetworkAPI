@@ -10,6 +10,7 @@ class User:
         self.email = email
         self.total_reactions = total_reactions
         self.posts = posts
+        self.status = "exists"
 
     def __lt__(self, other):
         return self.total_reactions < other.total_reactions
@@ -26,6 +27,7 @@ class User:
                     "author_id": p.author_id,
                     "text": p.text,
                     "reactions": p.reactions,
+                    "status": p.status
                 }
                 for p in self.posts
             ]
@@ -39,6 +41,7 @@ class User:
                 "email": self.email,
                 "total_reactions": self.total_reactions,
                 "posts": user_posts,
+                "status": self.status,
             }
         )
 
