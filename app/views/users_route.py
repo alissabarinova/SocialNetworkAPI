@@ -3,6 +3,8 @@ from flask import request, Response, url_for
 import json
 import uuid
 from http import HTTPStatus
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
 
@@ -93,6 +95,44 @@ def get_user(user_id):
     return response
 
 
+@app.delete("/users/<user_id>")
+def delete_user(user_id):
+    if user_id not in USERS.keys():
+        return Response(status=HTTPStatus.NOT_FOUND)
+    temp_user = USERS[user_id]
+    temp_user.status = "deleted"
+    EMAILS.pop(EMAILS.index(temp_user.email))
+    temp_user_posts = json.dumps(
+        [
+            {
+                "id": p.post_id,
+                "author_id": p.author_id,
+                "text": p.text,
+                "reactions": p.reactions,
+            }
+            for p in temp_user.posts
+        ]
+    )
+    response = Response(
+        json.dumps(
+            {
+                "id": temp_user.id,
+                "first_name": temp_user.first_name,
+                "last_name": temp_user.last_name,
+                "email": temp_user.email,
+                "total_reactions": temp_user.total_reactions,
+                "posts": temp_user_posts,
+                "status": temp_user.status,
+            }
+        ),
+        HTTPStatus.OK,
+        mimetype="application/json",
+    )
+
+    return response
+
+
+
 @app.get("/users/<user_id>/posts")
 def get_users_posts(user_id):
     data = request.get_json()
@@ -100,14 +140,14 @@ def get_users_posts(user_id):
     user = USERS[user_id]
 
     if type_sort == "asc":
-        sorted_posts = [post.to_dict() for post in sorted(user.posts)]
+        sorted_posts = [post.to_dict() for post in sorted(user.posts) if post.status == "exists"]
         return Response(
             json.dumps({"posts": sorted_posts}),
             status=HTTPStatus.OK,
             mimetype="application/json",
         )
     elif type_sort == "desc":
-        sorted_posts = [post.to_dict() for post in sorted(user.posts, reverse=True)]
+        sorted_posts = [post.to_dict() for post in sorted(user.posts, reverse=True) if post.status == "exists"]
         return Response(
             json.dumps({"posts": sorted_posts}),
             status=HTTPStatus.OK,
@@ -124,7 +164,8 @@ def get_statistics():
     data = request.get_json()
     stat_type = data["type"]
     if stat_type == "graph":
-        sorted_users = [user.to_dict() for user in sorted(USERS, reverse=True)]
+        tempUSERS = dict(sorted(USERS.items(), reverse=True))
+        sorted_users = [tempUSERS[k].to_dict() for k in tempUSERS.keys() if tempUSERS[k].status == "exists"]
 
         fig, ax = plt.subplots()
 
@@ -150,7 +191,8 @@ def get_statistics():
         stat_sort = data["sort"]
 
         if stat_sort == "asc":
-            sorted_users = [user.to_dict() for user in sorted(USERS)]
+            temp_USERS = dict(sorted(USERS.items()))
+            sorted_users = [temp_USERS[k].to_dict() for k in temp_USERS.keys() if temp_USERS[k].status == "exists"]
             return Response(
                 json.dumps({"users": sorted_users}),
                 status=HTTPStatus.OK,
@@ -158,7 +200,8 @@ def get_statistics():
             )
 
         elif stat_sort == "desc":
-            sorted_users = [user.to_dict() for user in sorted(USERS, reverse=True)]
+            temp_USERS = dict(sorted(USERS.items(), reverse=True))
+            sorted_users = [temp_USERS[k].to_dict() for k in temp_USERS.keys() if temp_USERS[k].status == "exists"]
             return Response(
                 json.dumps({"users": sorted_users}),
                 status=HTTPStatus.OK,
