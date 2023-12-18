@@ -170,7 +170,7 @@ def get_statistics():
         fig, ax = plt.subplots()
 
         user_names = [
-            f'{user["first_name"]} {user["last_name"]} id: {user["id"]}'
+            f'{user["first_name"]} {user["last_name"]}'
             for user in sorted_users
         ]
         users_reactions = [user["total_reactions"] for user in sorted_users]
