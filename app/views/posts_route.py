@@ -84,6 +84,7 @@ def create_reaction(post_id):
         return Response(status=HTTPStatus.NOT_FOUND)
     current_post = POSTS[post_id]
     current_post.reactions.append(new_reaction)
-    temp_user = USERS[user_id]
+    temp_user_id = current_post.author_id
+    temp_user = USERS[temp_user_id]
     temp_user.total_reactions += 1
     return Response(status=HTTPStatus.OK)

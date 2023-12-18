@@ -171,7 +171,7 @@ def get_statistics():
         fig, ax = plt.subplots()
 
         user_names = [
-            f'{user["first_name"]} {user["last_name"]} id: {user["id"]}'
+            f'{user["first_name"]} {user["last_name"]}'
             for user in sorted_users
         ]
         users_reactions = [user["total_reactions"] for user in sorted_users]
@@ -192,7 +192,7 @@ def get_statistics():
         stat_sort = data["sort"]
 
         if stat_sort == "asc":
-            temp_USERS = dict(sorted(USERS.items()))
+            temp_USERS = dict(sorted(USERS.items(), key=lambda x: x[1]))
             sorted_users = [temp_USERS[k].to_dict() for k in temp_USERS.keys() if temp_USERS[k].status == "exists"]
             return Response(
                 json.dumps({"users": sorted_users}),
@@ -201,7 +201,7 @@ def get_statistics():
             )
 
         elif stat_sort == "desc":
-            temp_USERS = dict(sorted(USERS.items(), reverse=True))
+            temp_USERS = dict(sorted(USERS.items(), key=lambda x: x[1], reverse=True))
             sorted_users = [temp_USERS[k].to_dict() for k in temp_USERS.keys() if temp_USERS[k].status == "exists"]
             return Response(
                 json.dumps({"users": sorted_users}),
